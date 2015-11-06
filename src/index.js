@@ -12,11 +12,18 @@ export default function promiseMiddleware({ dispatch }) {
         : next(action);
     }
 
-    return isPromise(action.payload)
-      ? action.payload.then(
-          result => dispatch({ ...action, payload: result }),
-          error => dispatch({ ...action, payload: error, error: true })
-        )
-      : next(action);
+    if (isPromise(action.payload)) {
+      dispatch({
+        type: action.type,
+        begin: true
+      });
+
+      return action.payload.then(
+        result => dispatch({ ...action, payload: result }),
+        error => dispatch({ ...action, payload: error, error: true })
+      );
+    }
+
+    return next(action);
   };
 }
