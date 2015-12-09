@@ -20,7 +20,10 @@ export default function promiseMiddleware({ dispatch }) {
 
       return action.payload.then(
         result => dispatch({ ...action, payload: result }),
-        error => dispatch({ ...action, payload: error, error: true })
+        error => {
+          dispatch({ ...action, payload: error, error: true });
+          return Promise.reject(error);
+        }
       );
     }
 
